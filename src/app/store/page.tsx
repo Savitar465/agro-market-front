@@ -1,75 +1,52 @@
+'use client'
+
+import Link from 'next/link'
+import {useSearchParams} from 'next/navigation'
+import {useMemo, useState} from 'react'
+import {useStore} from '@/lib/store'
+import {categories} from '@/data/products'
+
 export default function ProductsFeed(){
+    const {products} = useStore()
+    const searchParams = useSearchParams()
+    const q = searchParams.get('q')?.toLowerCase() || ''
+    const [activeCategory, setActiveCategory] = useState<string>('All')
+
+    const filtered = useMemo(() => {
+        return products.filter(p => {
+            const matchQ = !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
+            const matchCat = activeCategory === 'All' || p.category === activeCategory
+            return matchQ && matchCat
+        })
+    }, [products, q, activeCategory])
+
     return (
         <div className="bg-white">
-            <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-                <h2 className="sr-only">Products</h2>
+            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    <h1 className="text-2xl font-semibold text-gray-900">Eco Marketplace</h1>
+                    <div className="flex gap-2 overflow-x-auto">
+                        <button onClick={()=>setActiveCategory('All')} className={`px-3 py-1 rounded-full border ${activeCategory==='All'? 'bg-emerald-600 text-white border-emerald-600':'border-gray-300 text-gray-700'}`}>All</button>
+                        {categories.map(c => (
+                            <button key={c} onClick={()=>setActiveCategory(c)} className={`px-3 py-1 rounded-full border ${activeCategory===c? 'bg-emerald-600 text-white border-emerald-600':'border-gray-300 text-gray-700'}`}>{c}</button>
+                        ))}
+                    </div>
+                </div>
 
-                <div
-                    className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                    <a href="/products/1234956" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-01.jpg"
-                            alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Earthen Bottle</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$48</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-02.jpg"
-                            alt="Olive drab green insulated bottle with flared screw lid and flat top."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Nomad Tumbler</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$35</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-03.jpg"
-                            alt="Person using a pen to cross a task off a productivity paper card."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Focus Paper Refill</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$89</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-04.jpg"
-                            alt="Hand holding black machined steel mechanical pencil with brass tip and top."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Machined Mechanical Pencil</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$35</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-05.jpg"
-                            alt="Paper card sitting upright in walnut card holder on desk."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Focus Card Tray</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$64</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-06.jpg"
-                            alt="Stack of 3 small drab green cardboard paper card refill boxes with white text."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Focus Multi-Pack</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$39</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-07.jpg"
-                            alt="Brass scissors with geometric design, black steel finger holes, and included upright brass stand."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Brass Scissors</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$50</p>
-                    </a>
-                    <a href="#" className="group">
-                        <img
-                            src="https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-04-image-card-08.jpg"
-                            alt="Textured gray felt pouch for paper cards with snap button flap and elastic pen holder loop."
-                            className="aspect-square w-full rounded-lg bg-gray-200 object-cover group-hover:opacity-75 xl:aspect-7/8"/>
-                        <h3 className="mt-4 text-sm text-gray-700">Focus Carry Pouch</h3>
-                        <p className="mt-1 text-lg font-medium text-gray-900">$32</p>
-                    </a>
+                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {filtered.map(p => (
+                        <Link key={p.id} href={`/products/${p.id}`} className="group rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition">
+                            <img src={p.image} alt={p.name} className="aspect-square w-full object-cover" />
+                            <div className="p-4">
+                                <h3 className="text-sm font-medium text-gray-900 group-hover:text-emerald-700">{p.name}</h3>
+                                <p className="mt-1 text-sm text-gray-500">{p.category}</p>
+                                <p className="mt-2 text-lg font-semibold text-gray-900">${p.price.toFixed(2)}{p.unit? <span className="text-sm font-normal text-gray-500"> {p.unit}</span>: null}</p>
+                            </div>
+                        </Link>
+                    ))}
+                    {filtered.length === 0 && (
+                        <div className="col-span-full text-center py-16 text-gray-600">No products found.</div>
+                    )}
                 </div>
             </div>
         </div>

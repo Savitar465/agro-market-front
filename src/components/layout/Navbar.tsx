@@ -1,6 +1,9 @@
 'use client'
 
 import React, {Fragment, useState} from 'react'
+import Link from 'next/link'
+import {useRouter} from 'next/navigation'
+import {useStore} from '@/lib/store'
 import {
     Dialog,
     DialogBackdrop,
@@ -143,6 +146,9 @@ const navigation = {
 
 export default function Navbar({children}: Readonly<{ children: React.ReactNode; }>) {
     const [open, setOpen] = useState(false)
+    const router = useRouter()
+    const {cart} = useStore()
+    const cartCount = cart.reduce((sum, i) => sum + i.qty, 0)
 
     return (
         <div className="bg-white h-dvh">
@@ -290,14 +296,14 @@ export default function Navbar({children}: Readonly<{ children: React.ReactNode;
 
                             {/* Logo */}
                             <div className="ml-4 flex lg:ml-0">
-                                <a href="#">
-                                    <span className="sr-only">Your Company</span>
+                                <Link href="/store">
+                                    <span className="sr-only">AgroMarket</span>
                                     <img
-                                        alt=""
-                                        src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
+                                        alt="AgroMarket"
+                                        src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=emerald&shade=600"
                                         className="h-8 w-auto"
                                     />
-                                </a>
+                                </Link>
                             </div>
 
                             {/* Flyout menus */}
@@ -413,24 +419,25 @@ export default function Navbar({children}: Readonly<{ children: React.ReactNode;
                                 </div>
 
                                 {/* Search */}
-                                <div className="flex lg:ml-6">
-                                    <a href="#" className="p-2 text-gray-400 hover:text-gray-500">
-                                        <span className="sr-only">Search</span>
-                                        <MagnifyingGlassIcon aria-hidden="true" className="size-6"/>
-                                    </a>
-                                </div>
+                                <form onSubmit={(e)=>{e.preventDefault(); const input = (e.currentTarget.elements.namedItem('q') as HTMLInputElement); router.push(`/store?q=${encodeURIComponent(input.value)}`)}} className="hidden lg:flex lg:ml-6 items-center gap-2">
+                                    <input name="q" placeholder="Search products" className="rounded border-gray-300 px-3 py-1.5" />
+                                    <button className="p-2 text-gray-600 hover:text-gray-800" aria-label="Search">
+                                        <MagnifyingGlassIcon aria-hidden="true" className="size-5"/>
+                                    </button>
+                                </form>
 
-                                {/* Cart */}
-                                <div className="ml-4 flow-root lg:ml-6">
-                                    <a href="#" className="group -m-2 flex items-center p-2">
+                                {/* Cart & Sell */}
+                                <div className="ml-4 flex items-center gap-4 lg:ml-6">
+                                    <Link href="/sell" className="text-sm font-medium text-emerald-700 hover:text-emerald-800">Sell</Link>
+                                    <Link href="/cart" className="group -m-2 flex items-center p-2">
                                         <ShoppingBagIcon
                                             aria-hidden="true"
                                             className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
                                         />
                                         <span
-                                            className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
+                                            className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{cartCount}</span>
                                         <span className="sr-only">items in cart, view bag</span>
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
