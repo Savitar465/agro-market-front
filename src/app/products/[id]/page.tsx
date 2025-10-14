@@ -1,61 +1,118 @@
 'use client'
 
-import {useParams, useRouter} from 'next/navigation'
-import Link from 'next/link'
 import {useStore} from '@/lib/store'
+import {useRouter} from 'next/navigation'
+import {useState} from 'react'
 
-export default function ProductDetail() {
-  const params = useParams<{id: string}>()
-  const router = useRouter()
-  const {products, addToCart} = useStore()
-  const product = products.find(p => p.id === params.id)
+export default function Page({params}: { params: { id: string } }) {
+    const {products, addToCart} = useStore()
+    const product = products.find(p => p.id === params.id)
+    const router = useRouter()
+    const [qty, setQty] = useState(1)
 
-  if (!product) {
+    if (!product) {
+        return <div>Product not found</div>
+    }
+
+    const handleAddToCart = () => {
+        addToCart(product.id, qty)
+        router.push('/cart')
+    }
+
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <p className="text-gray-700">Product not found.</p>
-        <button onClick={()=>router.back()} className="mt-4 text-emerald-700 hover:underline">Go back</button>
-      </div>
-    )
-  }
+        <div className="bg-white">
+            <div className="pt-6">
+                {/* Image gallery */}
+                <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
+                    <div className="aspect-h-4 aspect-w-3 hidden overflow-hidden rounded-lg lg:block">
+                        <img
+                            src={product.images?.[0] || product.image}
+                            alt={product.description}
+                            className="h-full w-full object-cover object-center"
+                        />
+                    </div>
+                    <div className="hidden lg:grid lg:grid-cols-1 lg:gap-y-8">
+                        <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+                            <img
+                                src={product.images?.[1] || product.image}
+                                alt={product.description}
+                                className="h-full w-full object-cover object-center"
+                            />
+                        </div>
+                        <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg">
+                            <img
+                                src={product.images?.[2] || product.image}
+                                alt={product.description}
+                                className="h-full w-full object-cover object-center"
+                            />
+                        </div>
+                    </div>
+                    <div className="aspect-h-5 aspect-w-4 lg:aspect-h-4 lg:aspect-w-3 sm:overflow-hidden sm:rounded-lg">
+                        <img
+                            src={product.image}
+                            alt={product.description}
+                            className="h-full w-full object-cover object-center"
+                        />
+                    </div>
+                </div>
 
-  return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <img src={product.image} alt={product.name} className="w-full rounded-lg object-cover aspect-square" />
-            {product.images && product.images.length > 1 && (
-              <div className="mt-3 grid grid-cols-4 gap-2">
-                {product.images.map((img, idx) => (
-                  <img key={idx} src={img} alt={`${product.name} ${idx+1}`} className="w-full rounded object-cover aspect-square" />
-                ))}
-              </div>
-            )}
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900">{product.name}</h1>
-            <p className="mt-1 text-sm text-gray-500">{product.category}{product.seller ? ` • by ${product.seller.name}`: ''}</p>
-            <p className="mt-4 text-3xl font-bold text-gray-900">${product.price.toFixed(2)} {product.unit && <span className="text-base font-normal text-gray-500">{product.unit}</span>}</p>
-            <p className="mt-6 text-gray-700 leading-relaxed">{product.description}</p>
+                {/* Product info */}
+                <div className="mx-auto max-w-2xl px-4 pb-16 pt-10 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:grid-rows-[auto,auto,1fr] lg:gap-x-8 lg:px-8 lg:pb-24 lg:pt-16">
+                    <div className="lg:col-span-2 lg:border-r lg:border-gray-200 lg:pr-8">
+                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{product.name}</h1>
+                    </div>
 
-            <div className="mt-8 flex gap-3">
-              <button onClick={() => addToCart(product.id, 1)} className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-6 py-3 text-white hover:bg-emerald-700">Add to cart</button>
-              <Link href="/cart" className="inline-flex items-center justify-center rounded-md border border-gray-300 px-6 py-3 text-gray-700 hover:bg-gray-50">Go to cart</Link>
+                    {/* Options */}
+                    <div className="mt-4 lg:row-span-3 lg:mt-0">
+                        <h2 className="sr-only">Product information</h2>
+                        <p className="text-3xl tracking-tight text-gray-900">${product.price.toFixed(2)}</p>
+
+                        <div className="mt-10">
+                            <div className="flex items-center">
+                                <label htmlFor="quantity" className="mr-4 text-gray-900">Quantity</label>
+                                <input
+                                    type="number"
+                                    id="quantity"
+                                    name="quantity"
+                                    min="1"
+                                    value={qty}
+                                    onChange={(e) => setQty(parseInt(e.target.value))}
+                                    className="w-20 rounded border-gray-300 px-3 py-1.5 text-gray-900"
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleAddToCart}
+                                className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Add to bag
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
+                        {/* Description and details */}
+                        <div>
+                            <h3 className="sr-only">Description</h3>
+
+                            <div className="space-y-6">
+                                <p className="text-base text-gray-900">{product.description}</p>
+                            </div>
+                        </div>
+
+                        {product.seller && (
+                            <div className="mt-10">
+                                <h3 className="text-sm font-medium text-gray-900">Seller</h3>
+
+                                <div className="mt-4">
+                                    <p className="text-sm text-gray-600">{product.seller.name}</p>
+                                    <p className="text-sm text-gray-600">{product.seller.location}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
-            <div className="mt-6 text-sm text-gray-500">Stock: {product.stock ?? '—'}</div>
-          </div>
         </div>
-
-        <div className="mt-12">
-          <h2 className="text-lg font-semibold text-gray-900">About the seller</h2>
-          <p className="mt-2 text-gray-700">{product.seller?.name} • {product.seller?.location}</p>
-        </div>
-
-        <div className="mt-12">
-          <Link href="/store" className="text-emerald-700 hover:underline">Back to store</Link>
-        </div>
-      </div>
-    </div>
-  )
+    )
 }

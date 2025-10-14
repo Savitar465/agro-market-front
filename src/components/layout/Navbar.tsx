@@ -1,8 +1,4 @@
 'use client'
-
-import React, {Fragment, useState} from 'react'
-import Link from 'next/link'
-import {useRouter} from 'next/navigation'
 import {useStore} from '@/lib/store'
 import {
     Dialog,
@@ -19,136 +15,38 @@ import {
     TabPanels,
 } from '@headlessui/react'
 import {Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon} from '@heroicons/react/24/outline'
-
-const navigation = {
-    categories: [
-        {
-            id: 'women',
-            name: 'Women',
-            featured: [
-                {
-                    name: 'New Arrivals',
-                    href: '#',
-                    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/mega-menu-category-01.jpg',
-                    imageAlt: 'Models sitting back to back, wearing Basic Tee in black and bone.',
-                },
-                {
-                    name: 'Basic Tees',
-                    href: '#',
-                    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/mega-menu-category-02.jpg',
-                    imageAlt: 'Close up of Basic Tee fall bundle with off-white, ochre, olive, and black tees.',
-                },
-            ],
-            sections: [
-                {
-                    id: 'clothing',
-                    name: 'Clothing',
-                    items: [
-                        {name: 'Tops', href: '#'},
-                        {name: 'Dresses', href: '#'},
-                        {name: 'Pants', href: '#'},
-                        {name: 'Denim', href: '#'},
-                        {name: 'Sweaters', href: '#'},
-                        {name: 'T-Shirts', href: '#'},
-                        {name: 'Jackets', href: '#'},
-                        {name: 'Activewear', href: '#'},
-                        {name: 'Browse All', href: '#'},
-                    ],
-                },
-                {
-                    id: 'accessories',
-                    name: 'Accessories',
-                    items: [
-                        {name: 'Watches', href: '#'},
-                        {name: 'Wallets', href: '#'},
-                        {name: 'Bags', href: '#'},
-                        {name: 'Sunglasses', href: '#'},
-                        {name: 'Hats', href: '#'},
-                        {name: 'Belts', href: '#'},
-                    ],
-                },
-                {
-                    id: 'brands',
-                    name: 'Brands',
-                    items: [
-                        {name: 'Full Nelson', href: '#'},
-                        {name: 'My Way', href: '#'},
-                        {name: 'Re-Arranged', href: '#'},
-                        {name: 'Counterfeit', href: '#'},
-                        {name: 'Significant Other', href: '#'},
-                    ],
-                },
-            ],
-        },
-        {
-            id: 'men',
-            name: 'Men',
-            featured: [
-                {
-                    name: 'New Arrivals',
-                    href: '#',
-                    imageSrc:
-                        'https://tailwindcss.com/plus-assets/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg',
-                    imageAlt: 'Drawstring top with elastic loop closure and textured interior padding.',
-                },
-                {
-                    name: 'Artwork Tees',
-                    href: '#',
-                    imageSrc: 'https://tailwindcss.com/plus-assets/img/ecommerce-images/category-page-02-image-card-06.jpg',
-                    imageAlt:
-                        'Three shirts in gray, white, and blue arranged on table with same line drawing of hands and shapes overlapping on front of shirt.',
-                },
-            ],
-            sections: [
-                {
-                    id: 'clothing',
-                    name: 'Clothing',
-                    items: [
-                        {name: 'Tops', href: '#'},
-                        {name: 'Pants', href: '#'},
-                        {name: 'Sweaters', href: '#'},
-                        {name: 'T-Shirts', href: '#'},
-                        {name: 'Jackets', href: '#'},
-                        {name: 'Activewear', href: '#'},
-                        {name: 'Browse All', href: '#'},
-                    ],
-                },
-                {
-                    id: 'accessories',
-                    name: 'Accessories',
-                    items: [
-                        {name: 'Watches', href: '#'},
-                        {name: 'Wallets', href: '#'},
-                        {name: 'Bags', href: '#'},
-                        {name: 'Sunglasses', href: '#'},
-                        {name: 'Hats', href: '#'},
-                        {name: 'Belts', href: '#'},
-                    ],
-                },
-                {
-                    id: 'brands',
-                    name: 'Brands',
-                    items: [
-                        {name: 'Re-Arranged', href: '#'},
-                        {name: 'Counterfeit', href: '#'},
-                        {name: 'Full Nelson', href: '#'},
-                        {name: 'My Way', href: '#'},
-                    ],
-                },
-            ],
-        },
-    ],
-    pages: [
-        {name: 'Company', href: '#'},
-        {name: 'Stores', href: '#'},
-    ],
-}
+import {categories} from "@/data/products";
+import {Fragment, useState} from "react";
+import {useRouter} from "next/navigation";
+import Link from "next/link";
 
 export default function Navbar({children}: Readonly<{ children: React.ReactNode; }>) {
     const [open, setOpen] = useState(false)
     const router = useRouter()
-    const {cart} = useStore()
+    const {cart, products, sellers} = useStore()
     const cartCount = cart.reduce((sum, i) => sum + i.qty, 0)
+    const navigation = {
+        categories: categories.map((c) => ({
+            id: c,
+            name: c,
+            featured: products.filter((p) => p.category === c).slice(0, 2).map((p) => ({
+                name: p.name,
+                href: `/product/${p.id}`,
+                imageSrc: p.image,
+                imageAlt: p.description,
+            })),
+            sections: [
+                {
+                    id: 'all',
+                    name: `All ${c}`,
+                    items: products.filter((p) => p.category === c).map((p) => ({
+                        name: p.name,
+                        href: `/product/${p.id}`,
+                    })),
+                },
+            ],
+        })),
+    }
 
     return (
         <div className="bg-white h-dvh">
@@ -238,28 +136,18 @@ export default function Navbar({children}: Readonly<{ children: React.ReactNode;
                             </TabPanels>
                         </TabGroup>
 
-                        <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                            {navigation.pages.map((page) => (
-                                <div key={page.name} className="flow-root">
-                                    <a href={page.href} className="-m-2 block p-2 font-medium text-gray-900">
-                                        {page.name}
-                                    </a>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                            <div className="flow-root">
-                                <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
-                                    Sign in
-                                </a>
-                            </div>
-                            <div className="flow-root">
-                                <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
-                                    Create account
-                                </a>
-                            </div>
-                        </div>
+                        {/*<div className="space-y-6 border-t border-gray-200 px-4 py-6">*/}
+                        {/*    <div className="flow-root">*/}
+                        {/*        <a href="#" className="-m-2 block p-2 font-medium text-gray-900">*/}
+                        {/*            Sign in*/}
+                        {/*        </a>*/}
+                        {/*    </div>*/}
+                        {/*    <div className="flow-root">*/}
+                        {/*        <a href="#" className="-m-2 block p-2 font-medium text-gray-900">*/}
+                        {/*            Create account*/}
+                        {/*        </a>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
 
                         <div className="border-t border-gray-200 px-4 py-6">
                             <a href="#" className="-m-2 flex items-center p-2">
@@ -383,56 +271,77 @@ export default function Navbar({children}: Readonly<{ children: React.ReactNode;
                                             </PopoverPanel>
                                         </Popover>
                                     ))}
-                                    {navigation.pages.map((page) => (
-                                        <a
-                                            key={page.name}
-                                            href={page.href}
-                                            className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                                    <Popover className="flex">
+                                        <div className="relative flex">
+                                            <PopoverButton
+                                                className="group relative flex items-center justify-center text-sm font-medium text-gray-700 transition-colors duration-200 ease-out hover:text-gray-800 data-open:text-indigo-600">
+                                                Sellers
+                                                <span
+                                                    aria-hidden="true"
+                                                    className="absolute inset-x-0 -bottom-px z-30 h-0.5 transition duration-200 ease-out group-data-open:bg-indigo-600"
+                                                />
+                                            </PopoverButton>
+                                        </div>
+                                        <PopoverPanel
+                                            transition
+                                            className="absolute inset-x-0 top-full z-20 w-full bg-white text-sm text-gray-500 transition data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in"
                                         >
-                                            {page.name}
-                                        </a>
-                                    ))}
+                                            <div aria-hidden="true"
+                                                 className="absolute inset-0 top-1/2 bg-white shadow-sm"/>
+                                            <div className="relative bg-white">
+                                                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                                                    <div className="grid grid-cols-1 gap-y-10 py-16">
+                                                        <ul>
+                                                            {sellers.map((seller) => (
+                                                                <li key={seller.id}>
+                                                                    <Link href={`/sellers/${seller.id}`}
+                                                                          className="font-medium text-gray-900 hover:text-gray-700">
+                                                                        {seller.name}
+                                                                    </Link>
+                                                                </li>
+                                                            ))}
+                                                            <li>
+                                                                <Link href="/sellers/create"
+                                                                      className="font-medium text-indigo-600 hover:text-indigo-500">
+                                                                    Create a Seller
+                                                                </Link>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </PopoverPanel>
+                                    </Popover>
                                 </div>
                             </PopoverGroup>
-
                             <div className="ml-auto flex items-center">
-                                <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                                    <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">
-                                        Sign in
-                                    </a>
-                                    <span aria-hidden="true" className="h-6 w-px bg-gray-200"/>
-                                    <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">
-                                        Create account
-                                    </a>
-                                </div>
-
-                                <div className="hidden lg:ml-8 lg:flex">
-                                    <a href="#" className="flex items-center text-gray-700 hover:text-gray-800">
-                                        <img
-                                            alt=""
-                                            src="https://tailwindcss.com/plus-assets/img/flags/flag-canada.svg"
-                                            className="block h-auto w-5 shrink-0"
-                                        />
-                                        <span className="ml-3 block text-sm font-medium">CAD</span>
-                                        <span className="sr-only">, change currency</span>
-                                    </a>
-                                </div>
+                                {/*<div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">*/}
+                                {/*    <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">*/}
+                                {/*        Sign in*/}
+                                {/*    </a>*/}
+                                {/*    <span aria-hidden="true" className="h-6 w-px bg-gray-200"/>*/}
+                                {/*    <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">*/}
+                                {/*        Create account*/}
+                                {/*    </a>*/}
+                                {/*</div>*/}
 
                                 {/* Search */}
                                 <form onSubmit={(e)=>{e.preventDefault(); const input = (e.currentTarget.elements.namedItem('q') as HTMLInputElement); router.push(`/store?q=${encodeURIComponent(input.value)}`)}} className="hidden lg:flex lg:ml-6 items-center gap-2">
-                                    <input name="q" placeholder="Search products" className="rounded border-gray-300 px-3 py-1.5" />
-                                    <button className="p-2 text-gray-600 hover:text-gray-800" aria-label="Search">
+                                    <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
+                                    <input name="q" placeholder="Search products" className="block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6" />
+                                    </div>
+                                    <button className="p-2 text-indigo-600 hover:text-indigo-500" aria-label="Search">
                                         <MagnifyingGlassIcon aria-hidden="true" className="size-5"/>
                                     </button>
                                 </form>
 
                                 {/* Cart & Sell */}
                                 <div className="ml-4 flex items-center gap-4 lg:ml-6">
-                                    <Link href="/sell" className="text-sm font-medium text-emerald-700 hover:text-emerald-800">Sell</Link>
+                                    <Link href="/sell" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">Sell</Link>
                                     <Link href="/cart" className="group -m-2 flex items-center p-2">
                                         <ShoppingBagIcon
                                             aria-hidden="true"
-                                            className="size-6 shrink-0 text-gray-400 group-hover:text-gray-500"
+                                            className="size-6 shrink-0 text-indigo-600 group-hover:text-indigo-500"
                                         />
                                         <span
                                             className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">{cartCount}</span>
@@ -450,5 +359,6 @@ export default function Navbar({children}: Readonly<{ children: React.ReactNode;
                 </div>
             </div>
         </div>
+
     )
 }

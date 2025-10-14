@@ -20,99 +20,128 @@ export const categories = [
   'Fruits',
   'Vegetables',
   'Dairy & Eggs',
-  'Grains & Legumes',
-  'Herbs & Spices',
+  'Meat & Poultry',
+  'Bakery',
+  'Pantry',
   'Beverages',
   'Eco Household',
 ] as const;
 
 export const products: Product[] = [
   {
-    id: 'apples-001',
-    name: 'Organic Apples',
-    price: 3.5,
+    id: 'apples-fuji-001',
+    name: 'Organic Fuji Apples',
+    price: 3.99,
     unit: 'per lb',
     image:
-      'https://images.unsplash.com/photo-1547516508-c1eaa28f30e1?q=80&w=1200&auto=format&fit=crop',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Apfel-Fuji.jpg/1200px-Apfel-Fuji.jpg',
     images: [
-      'https://images.unsplash.com/photo-1547516508-c1eaa28f30e1?q=80&w=1200&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=1200&auto=format&fit=crop',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Apfel-Fuji.jpg/1200px-Apfel-Fuji.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Apfel-Fuji.jpg/1200px-Apfel-Fuji.jpg',
     ],
     description:
-      'Crisp, sweet organic apples from a local regenerative orchard. No pesticides, packed same-day.',
+      'Crisp and sweet Fuji apples, grown organically without any pesticides. Perfect for a healthy snack.',
     category: 'Fruits',
-    stock: 120,
-    rating: 4.7,
-    seller: { id: 'farm-1', name: 'Green Valley Farm', location: 'Oregon, USA' },
-  },
-  {
-    id: 'lettuce-001',
-    name: 'Butter Lettuce',
-    price: 2.2,
-    unit: 'each',
-    image:
-      'https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?q=80&w=1200&auto=format&fit=crop',
-    description:
-      'Tender, pesticide-free butter lettuce, harvested this morning and delivered fresh.',
-    category: 'Vegetables',
-    stock: 60,
-    rating: 4.5,
-    seller: { id: 'farm-2', name: 'Sunny Sprouts', location: 'California, USA' },
-  },
-  {
-    id: 'eggs-001',
-    name: 'Pasture-Raised Eggs (Dozen)',
-    price: 6.0,
-    unit: 'per dozen',
-    image:
-      'https://images.unsplash.com/photo-1517957754645-70841232b3d1?q=80&w=1200&auto=format&fit=crop',
-    description:
-      'Eggs from pasture-raised hens. Deep yellow yolks, humanely raised, no antibiotics.',
-    category: 'Dairy & Eggs',
-    stock: 40,
-    rating: 4.8,
-    seller: { id: 'farm-3', name: 'Happy Hens Co.', location: 'Vermont, USA' },
-  },
-  {
-    id: 'beans-001',
-    name: 'Organic Black Beans (1 lb)',
-    price: 4.2,
-    unit: 'per bag',
-    image:
-      'https://images.unsplash.com/photo-1530731141654-5993c3016c77?q=80&w=1200&auto=format&fit=crop',
-    description:
-      'Protein-rich black beans grown with soil-friendly practices. Great for soups and bowls.',
-    category: 'Grains & Legumes',
-    stock: 200,
-    rating: 4.6,
-    seller: { id: 'coop-1', name: 'Soil & Seed Co-op', location: 'Arizona, USA' },
-  },
-  {
-    id: 'soap-001',
-    name: 'Zero-Waste Dish Soap Bar',
-    price: 8.5,
-    unit: 'each',
-    image:
-      'https://images.unsplash.com/photo-1615486364132-5a52f7b74d70?q=80&w=1200&auto=format&fit=crop',
-    description:
-      'All-natural dish soap bar. Plastic-free, biodegradable ingredients, gentle on skin and planet.',
-    category: 'Eco Household',
-    stock: 85,
-    rating: 4.4,
-    seller: { id: 'maker-1', name: 'Leaf & Lather', location: 'Colorado, USA' },
-  },
-  {
-    id: 'tea-001',
-    name: 'Herbal Mint Tea (Loose Leaf)',
-    price: 5.75,
-    unit: '100g',
-    image:
-      'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1200&auto=format&fit=crop',
-    description:
-      'Cooling peppermint grown organically. Caffeine-free, soothing aroma in compostable pouch.',
-    category: 'Beverages',
     stock: 150,
-    rating: 4.3,
-    seller: { id: 'garden-1', name: 'Wildleaf Garden', location: 'Washington, USA' },
+    rating: 4.8,
+    seller: { id: 'farm-A1', name: 'Orchard Fresh Farms', location: 'Yakima, WA' },
+  },
+  {
+    id: 'carrots-rainbow-002',
+    name: 'Rainbow Carrots',
+    price: 2.49,
+    unit: 'bunch',
+    image:
+      'https://images.unsplash.com/photo-1590868309235-ea34bed7bd7f?q=80&w=800&auto=format&fit=crop',
+    description:
+      'A colorful mix of purple, yellow, and orange carrots. Packed with vitamins and a sweet, earthy flavor.',
+    category: 'Vegetables',
+    stock: 80,
+    rating: 4.6,
+    seller: { id: 'farm-B2', name: 'Sunset Valley Organics', location: 'Ojai, CA' },
+  },
+  {
+    id: 'eggs-pasture-003',
+    name: 'Pasture-Raised Eggs',
+    price: 7.50,
+    unit: 'dozen',
+    image:
+      'https://media.post.rvohealth.io/wp-content/uploads/2020/09/health-benefits-of-eggs-732x549-thumbnail-732x549.jpg',
+    description:
+      'From hens that roam freely on green pastures. These eggs have rich, deep orange yolks and superior flavor.',
+    category: 'Dairy & Eggs',
+    stock: 50,
+    rating: 4.9,
+    seller: { id: 'farm-C3', name: 'Happy Hen Homestead', location: 'Lancaster, PA' },
+  },
+  {
+    id: 'beef-ground-004',
+    name: 'Grass-Fed Ground Beef',
+    price: 10.99,
+    unit: 'per lb',
+    image:
+      'https://d2ht9oj9id87jp.cloudfront.net/v1/images/5724/thumb/w1900_h750/grass-fed-organic-ground-beef-product-blackboxmeats.jpeg',
+    description:
+      'Lean and flavorful ground beef from 100% grass-fed cattle. No hormones or antibiotics.',
+    category: 'Meat & Poultry',
+    stock: 30,
+    rating: 4.9,
+    seller: { id: 'ranch-D4', name: 'Green Pastures Ranch', location: 'Boulder, CO' },
+  },
+  {
+    id: 'bread-sourdough-005',
+    name: 'Artisan Sourdough Loaf',
+    price: 6.00,
+    unit: 'each',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1_FHCO8-v1jOkGOVyK71lPcexLaCk1eQnKQ&s',
+    description:
+      'Handmade sourdough with a crispy crust and a soft, chewy interior. Made with organic flour and a natural starter.',
+    category: 'Bakery',
+    stock: 40,
+    rating: 4.7,
+    seller: { id: 'bakery-E5', name: 'The Daily Rise Bakery', location: 'San Francisco, CA' },
+  },
+  {
+    id: 'honey-raw-006',
+    name: 'Raw Wildflower Honey',
+    price: 12.00,
+    unit: '16 oz jar',
+    image:
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQkqOyuth_exmwMV4nPvj6axuxFvM1RQnfUoA&s',
+    description:
+      'Unfiltered and unheated honey from a variety of wildflowers. Full of natural enzymes and pollen.',
+    category: 'Pantry',
+    stock: 100,
+    rating: 4.8,
+    seller: { id: 'apiary-F6', name: 'Golden Bee Apiary', location: 'Asheville, NC' },
+  },
+  {
+    id: 'kombucha-ginger-007',
+    name: 'Ginger-Turmeric Kombucha',
+    price: 4.50,
+    unit: '16 fl oz',
+    image:
+      'https://www.kombuchakamp.com/wp-content/uploads/2012/06/tumeric_0706.jpg',
+    description:
+      'A bubbly and probiotic-rich kombucha, brewed with organic ginger and turmeric for a spicy kick.',
+    category: 'Beverages',
+    stock: 60,
+    rating: 4.6,
+    seller: { id: 'brewery-G7', name: 'Ferment for Good', location: 'Portland, OR' },
+  },
+  {
+    id: 'oranges-allpurpose-008',
+    name: 'Oranges',
+    price: 9.99,
+    unit: 'per lb',
+    image:
+      'https://upload.wikimedia.org/wikipedia/commons/4/43/Ambersweet_oranges.jpg',
+    description:
+      'The orange, also called sweet orange to distinguish it from the bitter orange (Citrus × aurantium), is the fruit of a tree in the family Rutaceae.',
+    category: 'Fruits',
+    stock: 200,
+    rating: 4.7,
+    seller: { id: 'maker-H8', name: 'Pure Planet Home', location: 'Austin, TX' },
   },
 ];

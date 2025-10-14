@@ -1,79 +1,270 @@
 'use client'
 
-import {FormEvent, useMemo, useState} from 'react'
 import {useStore} from '@/lib/store'
+import {useRouter} from 'next/navigation'
 
-export default function CheckoutPage(){
-  const {cart, products, clearCart} = useStore()
-  const items = useMemo(() => cart.map(ci => ({...products.find(p => p.id === ci.id)!, qty: ci.qty})).filter(Boolean), [cart, products])
-  const subtotal = items.reduce((sum: number, it: any) => sum + it.price * it.qty, 0)
-  const shipping = subtotal > 0 ? 5 : 0
-  const total = subtotal + shipping
-  const [placed, setPlaced] = useState(false)
+export default function Page() {
+    const {cart, products, clearCart} = useStore()
+    const router = useRouter()
 
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    setPlaced(true)
-    clearCart()
-  }
+    const cartProducts = cart.map(item => {
+        const product = products.find(p => p.id === item.id)
+        return {...item, product}
+    })
 
-  if (placed) {
+    const total = cartProducts.reduce((sum, item) => sum + (item.product?.price || 0) * item.qty, 0)
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        alert('Checkout successful!')
+        clearCart()
+        router.push('/store')
+    }
+
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <h1 className="text-2xl font-semibold text-gray-900">Order placed!</h1>
-        <p className="mt-2 text-gray-700">Thank you for supporting sustainable producers. This is a prototype; no payment was processed.</p>
-      </div>
-    )
-  }
+        <div className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+            <div>
+                <h2 className="text-lg font-medium text-gray-900">Contact information</h2>
 
-  return (
-    <div className="bg-white">
-      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Checkout</h1>
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <form onSubmit={onSubmit} className="lg:col-span-2 space-y-6">
-            <section className="border rounded-lg p-4">
-              <h2 className="font-semibold text-gray-900">Shipping information</h2>
-              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input required placeholder="First name" className="rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="Last name" className="rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="Email" type="email" className="sm:col-span-2 rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="Address" className="sm:col-span-2 rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="City" className="rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="Postal code" className="rounded border-gray-300 px-3 py-2" />
-              </div>
-            </section>
-
-            <section className="border rounded-lg p-4">
-              <h2 className="font-semibold text-gray-900">Payment</h2>
-              <p className="text-sm text-gray-600">Prototype only — no real payment. Enter any values.</p>
-              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input required placeholder="Cardholder name" className="sm:col-span-2 rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="Card number" className="sm:col-span-2 rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="MM/YY" className="rounded border-gray-300 px-3 py-2" />
-                <input required placeholder="CVC" className="rounded border-gray-300 px-3 py-2" />
-              </div>
-            </section>
-
-            <button type="submit" className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-6 py-3 text-white hover:bg-emerald-700">Place order</button>
-          </form>
-
-          <aside className="border rounded-lg p-4 h-fit">
-            <h2 className="font-semibold text-gray-900">Order summary</h2>
-            <div className="mt-2 space-y-2 text-sm">
-              {items.map((it: any) => (
-                <div key={it.id} className="flex justify-between">
-                  <span>{it.name} × {it.qty}</span>
-                  <span>${(it.price * it.qty).toFixed(2)}</span>
+                <div className="mt-4">
+                    <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                        Email address
+                    </label>
+                    <div className="mt-1">
+                        <input
+                            type="email"
+                            id="email-address"
+                            name="email-address"
+                            autoComplete="email"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
                 </div>
-              ))}
-              <div className="flex justify-between"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-              <div className="flex justify-between"><span>Shipping</span><span>${shipping.toFixed(2)}</span></div>
-              <div className="flex justify-between font-semibold border-t pt-2"><span>Total</span><span>${total.toFixed(2)}</span></div>
             </div>
-          </aside>
+
+            <div className="mt-10 lg:mt-0">
+                <h2 className="text-lg font-medium text-gray-900">Shipping information</h2>
+
+                <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+                    <div>
+                        <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
+                            First name
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                type="text"
+                                id="first-name"
+                                name="first-name"
+                                autoComplete="given-name"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
+                            Last name
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                type="text"
+                                id="last-name"
+                                name="last-name"
+                                autoComplete="family-name"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                            Address
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                type="text"
+                                name="address"
+                                id="address"
+                                autoComplete="street-address"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                            City
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                type="text"
+                                name="city"
+                                id="city"
+                                autoComplete="address-level2"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label htmlFor="postal-code" className="block text-sm font-medium text-gray-700">
+                            Postal code
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                type="text"
+                                name="postal-code"
+                                id="postal-code"
+                                autoComplete="postal-code"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-10 border-t border-gray-200 pt-10">
+                    <h2 className="text-lg font-medium text-gray-900">Payment</h2>
+
+                    <fieldset className="mt-4">
+                        <legend className="sr-only">Payment type</legend>
+                        <div className="space-y-4 sm:flex sm:items-center sm:space-x-10 sm:space-y-0">
+                            <div className="flex items-center">
+                                <input
+                                    id="credit-card"
+                                    name="payment-type"
+                                    type="radio"
+                                    defaultChecked
+                                    className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <label htmlFor="credit-card" className="ml-3 block text-sm font-medium text-gray-700">
+                                    Credit card
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                        <div className="col-span-4">
+                            <label htmlFor="card-number" className="block text-sm font-medium text-gray-700">
+                                Card number
+                            </label>
+                            <div className="mt-1">
+                                <input
+                                    type="text"
+                                    id="card-number"
+                                    name="card-number"
+                                    autoComplete="cc-number"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="col-span-4">
+                            <label htmlFor="name-on-card" className="block text-sm font-medium text-gray-700">
+                                Name on card
+                            </label>
+                            <div className="mt-1">
+                                <input
+                                    type="text"
+                                    id="name-on-card"
+                                    name="name-on-card"
+                                    autoComplete="cc-name"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="col-span-3">
+                            <label htmlFor="expiration-date" className="block text-sm font-medium text-gray-700">
+                                Expiration date (MM/YY)
+                            </label>
+                            <div className="mt-1">
+                                <input
+                                    type="text"
+                                    name="expiration-date"
+                                    id="expiration-date"
+                                    autoComplete="cc-exp"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="cvc" className="block text-sm font-medium text-gray-700">
+                                CVC
+                            </label>
+                            <div className="mt-1">
+                                <input
+                                    type="text"
+                                    name="cvc"
+                                    id="cvc"
+                                    autoComplete="csc"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-10 border-t border-gray-200 pt-10">
+                    <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
+
+                    <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+                        <h3 className="sr-only">Items in your cart</h3>
+                        <ul role="list" className="divide-y divide-gray-200">
+                            {cartProducts.map(({id, qty, product}) => (
+                                <li key={id} className="flex px-4 py-6 sm:px-6">
+                                    <div className="flex-shrink-0">
+                                        <img src={product?.image} alt={product?.description} className="w-20 rounded-md" />
+                                    </div>
+
+                                    <div className="ml-6 flex flex-1 flex-col">
+                                        <div className="flex">
+                                            <div className="min-w-0 flex-1">
+                                                <h4 className="text-sm">
+                                                    <a href={`/products/${product?.id}`} className="font-medium text-gray-700 hover:text-gray-800">
+                                                        {product?.name}
+                                                    </a>
+                                                </h4>
+                                                <p className="mt-1 text-sm text-gray-500">Qty: {qty}</p>
+                                            </div>
+
+                                            <div className="ml-4 flow-root flex-shrink-0">
+                                                <p className="mt-1 text-sm font-medium text-gray-900">${(product?.price || 0).toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                        <dl className="space-y-6 border-t border-gray-200 px-4 py-6 sm:px-6">
+                            <div className="flex items-center justify-between">
+                                <dt className="text-sm">Subtotal</dt>
+                                <dd className="text-sm font-medium text-gray-900">${total.toFixed(2)}</dd>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <dt className="text-sm">Shipping</dt>
+                                <dd className="text-sm font-medium text-gray-900">$0.00</dd>
+                            </div>
+                            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+                                <dt className="text-base font-medium">Total</dt>
+                                <dd className="text-base font-medium text-gray-900">${total.toFixed(2)}</dd>
+                            </div>
+                        </dl>
+
+                        <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                            <form onSubmit={handleSubmit}>
+                                <button
+                                    type="submit"
+                                    className="w-full rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
+                                >
+                                    Confirm order
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }

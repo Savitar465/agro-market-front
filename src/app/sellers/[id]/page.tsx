@@ -4,28 +4,52 @@ import {useStore} from '@/lib/store'
 import {useRouter} from 'next/navigation'
 import {categories, Product} from '@/data/products'
 import {useForm} from "react-hook-form";
+import Link from "next/link";
 
-export default function Page() {
-    const {addProduct} = useStore()
+export default function Page({params}: { params: { id: string } }) {
+    const {sellers, products, addProduct} = useStore()
+    const seller = sellers.find(s => s.id === params.id)
+    const sellerProducts = products.filter(p => seller?.productIds.includes(p.id))
     const router = useRouter()
     const {register, handleSubmit} = useForm<Product>()
 
+    if (!seller) {
+        return <div>Seller not found</div>
+    }
+
     const onSubmit = (data: Product) => {
-        addProduct(data, 'default')
-        router.push('/store')
+        addProduct(data, seller.id)
+        router.refresh()
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 divide-y divide-gray-200">
-            <div className="space-y-8 divide-y divide-gray-200">
-                <div>
-                    <div>
-                        <h3 className="text-lg font-medium leading-6 text-gray-900">Add a new product</h3>
-                        <p className="mt-1 text-sm text-gray-500">This information will be displayed publicly so be careful what you share.</p>
-                    </div>
+        <div>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl mb-8">{seller.name}</h1>
 
-                    <div className="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-                        <div className="sm:col-span-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Products</h2>
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+                        {sellerProducts.map((product) => (
+                            <Link key={product.id} href={`/products/${product.id}`} className="group">
+                                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+                                    <img
+                                        src={product.image}
+                                        alt={product.description}
+                                        className="h-full w-full object-cover object-center group-hover:opacity-75"
+                                    />
+                                </div>
+                                <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
+                                <p className="mt-1 text-lg font-medium text-gray-900">${product.price.toFixed(2)}</p>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <h2 className="text-lg font-medium text-gray-900 mb-4">Add a new product</h2>
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        <div>
                             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                                 Product name
                             </label>
@@ -39,7 +63,7 @@ export default function Page() {
                             </div>
                         </div>
 
-                        <div className="sm:col-span-6">
+                        <div>
                             <label htmlFor="description" className="block text-sm font-medium text-gray-700">
                                 Description
                             </label>
@@ -51,10 +75,9 @@ export default function Page() {
                                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 />
                             </div>
-                            <p className="mt-2 text-sm text-gray-500">Write a few sentences about the product.</p>
                         </div>
 
-                        <div className="sm:col-span-3">
+                        <div>
                             <label htmlFor="price" className="block text-sm font-medium text-gray-700">
                                 Price
                             </label>
@@ -69,7 +92,7 @@ export default function Page() {
                             </div>
                         </div>
 
-                        <div className="sm:col-span-3">
+                        <div>
                             <label htmlFor="category" className="block text-sm font-medium text-gray-700">
                                 Category
                             </label>
@@ -85,7 +108,7 @@ export default function Page() {
                             </div>
                         </div>
 
-                        <div className="sm:col-span-6">
+                        <div>
                             <label htmlFor="image" className="block text-sm font-medium text-gray-700">
                                 Image URL
                             </label>
@@ -98,27 +121,18 @@ export default function Page() {
                                 />
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <div className="pt-5">
-                <div className="flex justify-end">
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        className="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Save
-                    </button>
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                className="ml-3 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                                Add Product
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     )
 }

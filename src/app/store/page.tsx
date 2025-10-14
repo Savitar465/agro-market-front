@@ -1,54 +1,49 @@
 'use client'
 
+import {useStore} from '@/lib/store'
 import Link from 'next/link'
 import {useSearchParams} from 'next/navigation'
-import {useMemo, useState} from 'react'
-import {useStore} from '@/lib/store'
 import {categories} from '@/data/products'
 
-export default function ProductsFeed(){
+export default function Page() {
     const {products} = useStore()
     const searchParams = useSearchParams()
-    const q = searchParams.get('q')?.toLowerCase() || ''
-    const [activeCategory, setActiveCategory] = useState<string>('All')
+    const q = searchParams.get('q')
+    const category = searchParams.get('category')
 
-    const filtered = useMemo(() => {
-        return products.filter(p => {
-            const matchQ = !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
-            const matchCat = activeCategory === 'All' || p.category === activeCategory
-            return matchQ && matchCat
-        })
-    }, [products, q, activeCategory])
+    const filteredProducts = products.filter(p => {
+        if (q && !p.name.toLowerCase().includes(q.toLowerCase())) return false
+        return !(category && p.category !== category);
+
+    })
 
     return (
-        <div className="bg-white">
-            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                    <h1 className="text-2xl font-semibold text-gray-900">Eco Marketplace</h1>
-                    <div className="flex gap-2 overflow-x-auto">
-                        <button onClick={()=>setActiveCategory('All')} className={`px-3 py-1 rounded-full border ${activeCategory==='All'? 'bg-emerald-600 text-white border-emerald-600':'border-gray-300 text-gray-700'}`}>All</button>
-                        {categories.map(c => (
-                            <button key={c} onClick={()=>setActiveCategory(c)} className={`px-3 py-1 rounded-full border ${activeCategory===c? 'bg-emerald-600 text-white border-emerald-600':'border-gray-300 text-gray-700'}`}>{c}</button>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {filtered.map(p => (
-                        <Link key={p.id} href={`/products/${p.id}`} className="group rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition">
-                            <img src={p.image} alt={p.name} className="aspect-square w-full object-cover" />
-                            <div className="p-4">
-                                <h3 className="text-sm font-medium text-gray-900 group-hover:text-emerald-700">{p.name}</h3>
-                                <p className="mt-1 text-sm text-gray-500">{p.category}</p>
-                                <p className="mt-2 text-lg font-semibold text-gray-900">${p.price.toFixed(2)}{p.unit? <span className="text-sm font-normal text-gray-500"> {p.unit}</span>: null}</p>
-                            </div>
-                        </Link>
+        <div>
+            <div className="flex justify-between mb-8">
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Products</h1>
+                <div className="flex gap-4">
+                    <Link href="/store" className={`text-sm font-medium ${!category ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-900'}`}>All</Link>
+                    {categories.map(c => (
+                        <Link key={c} href={`/store?category=${c}`} className={`text-sm font-medium ${category === c ? 'text-indigo-600' : 'text-gray-500 hover:text-gray-900'}`}>{c}</Link>
                     ))}
-                    {filtered.length === 0 && (
-                        <div className="col-span-full text-center py-16 text-gray-600">No products found.</div>
-                    )}
                 </div>
             </div>
+
+            <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+                {filteredProducts.map((product) => (
+                    <Link key={product.id} href={`/products/${product.id}`} className="group">
+                        <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
+                            <img
+                                src={product.image}
+                                alt={product.description}
+                                className="h-full w-full object-cover object-center group-hover:opacity-75"
+                            />
+                        </div>
+                        <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
+                        <p className="mt-1 text-lg font-medium text-gray-900">${product.price.toFixed(2)}</p>
+                    </Link>
+                ))}
+            </div>
         </div>
-    );
-};
+    )
+}
